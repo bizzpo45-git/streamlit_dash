@@ -25,13 +25,14 @@ CORES_SENSORES = {
     "Temperatura4": "#ff3860",
 }
 
-LIM_FRIO = 18.0
+LIM_FRIO       = 18.0
 LIM_NORMAL_MAX = 26.0
 LIM_ALERTA_MAX = 32.0
-STALE_MIN = 5
+STALE_MIN      = 5
 
 # =========================================================
-# CSS - TEMA SCADA DARK
+# CSS — apenas overrides de widgets nativos do Streamlit
+# (não usamos classes CSS para estrutura de conteúdo)
 # =========================================================
 SCADA_CSS = """
 <style>
@@ -40,86 +41,73 @@ SCADA_CSS = """
 .stApp {
     background: radial-gradient(ellipse at top, #0f1419 0%, #0a0e1a 60%, #060912 100%);
     color: #e0e6ed;
-    font-family: 'Inter', -apple-system, sans-serif;
+    font-family: 'Inter', sans-serif;
 }
 [data-testid="stHeader"] { background: transparent; height: 0; }
 #MainMenu, footer { visibility: hidden; }
 .block-container { padding: 1rem 1.5rem 2rem 1.5rem; max-width: 100%; }
 
-.scada-header {
-    background: linear-gradient(90deg, #131722 0%, #1a1f2e 100%);
-    border: 1px solid #2a3142; border-left: 4px solid #00d4ff;
-    border-radius: 4px; padding: 14px 22px; margin-bottom: 16px;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 12px;
+.stTextInput input, .stPasswordInput input {
+    background: #0a0e1a !important;
+    border: 1px solid #2a3142 !important;
+    color: #e0e6ed !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    border-radius: 2px !important;
 }
-.scada-title-block { display: flex; flex-direction: column; gap: 2px; }
-.scada-title { font-size: 1.25rem; font-weight: 700; color: #fff; letter-spacing: 2.5px; text-transform: uppercase; margin: 0; }
-.scada-subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #00d4ff; letter-spacing: 1.5px; margin: 0; }
-.scada-status-block { display: flex; gap: 18px; align-items: center; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; flex-wrap: wrap; }
-.status-item { display: flex; align-items: center; gap: 8px; color: #6c7a89; text-transform: uppercase; letter-spacing: 1px; }
-.status-led { width: 10px; height: 10px; border-radius: 50%; background: #06ffa5; box-shadow: 0 0 8px #06ffa5, 0 0 16px rgba(6,255,165,0.4); animation: pulse 1.6s ease-in-out infinite; }
-.status-led.warn { background: #ffaa00; box-shadow: 0 0 8px #ffaa00, 0 0 16px rgba(255,170,0,0.4); }
-.status-led.error { background: #ff3860; box-shadow: 0 0 8px #ff3860, 0 0 16px rgba(255,56,96,0.4); }
-.status-value { color: #e0e6ed; }
-@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
-
-.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-.kpi-tile { background: linear-gradient(135deg, #131722 0%, #1a1f2e 100%); border: 1px solid #2a3142; border-radius: 4px; padding: 14px 16px; position: relative; overflow: hidden; }
-.kpi-tile::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: #00d4ff; }
-.kpi-tile.cold::before { background: #00b4d8; }
-.kpi-tile.normal::before { background: #06ffa5; }
-.kpi-tile.warn::before { background: #ffaa00; }
-.kpi-tile.hot::before { background: #ff3860; }
-.kpi-tile.offline::before { background: #6c7a89; }
-.kpi-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #6c7a89; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
-.kpi-value { font-family: 'JetBrains Mono', monospace; font-size: 1.85rem; font-weight: 700; color: #fff; line-height: 1.1; }
-.kpi-unit { font-size: 0.95rem; color: #6c7a89; margin-left: 4px; font-weight: 500; }
-.kpi-tag { display: inline-block; padding: 2px 8px; border-radius: 2px; font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 1.2px; margin-top: 8px; border: 1px solid; }
-.kpi-tag.cold { background: rgba(0,180,216,0.12); color: #00b4d8; border-color: #00b4d8; }
-.kpi-tag.normal { background: rgba(6,255,165,0.12); color: #06ffa5; border-color: #06ffa5; }
-.kpi-tag.warn { background: rgba(255,170,0,0.12); color: #ffaa00; border-color: #ffaa00; }
-.kpi-tag.hot { background: rgba(255,56,96,0.12); color: #ff3860; border-color: #ff3860; }
-.kpi-tag.offline { background: rgba(108,122,137,0.12); color: #6c7a89; border-color: #6c7a89; }
-
-.scada-section { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #00d4ff; text-transform: uppercase; letter-spacing: 2.5px; margin: 20px 0 10px 0; padding-bottom: 6px; border-bottom: 1px solid #2a3142; display: flex; align-items: center; gap: 8px; }
-.scada-section::before { content: '▸'; color: #00d4ff; }
-
-.login-wrapper { max-width: 380px; margin: 80px auto; background: linear-gradient(135deg, #131722 0%, #1a1f2e 100%); border: 1px solid #2a3142; border-top: 3px solid #00d4ff; padding: 32px 28px; border-radius: 4px; box-shadow: 0 8px 32px rgba(0, 212, 255, 0.08); }
-.login-title { font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 4px 0; text-align: center; }
-.login-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #00d4ff; letter-spacing: 1.5px; margin: 0 0 24px 0; text-align: center; }
-
-.stTextInput input, .stPasswordInput input { background: #0a0e1a !important; border: 1px solid #2a3142 !important; color: #e0e6ed !important; font-family: 'JetBrains Mono', monospace !important; border-radius: 2px !important; }
-.stTextInput input:focus, .stPasswordInput input:focus { border-color: #00d4ff !important; box-shadow: 0 0 0 1px #00d4ff !important; }
-.stTextInput label, .stPasswordInput label { color: #6c7a89 !important; font-family: 'JetBrains Mono', monospace !important; font-size: 0.7rem !important; text-transform: uppercase !important; letter-spacing: 1.5px !important; }
-.stButton > button { background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%); color: #0a0e1a; border: none; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; font-size: 0.78rem; border-radius: 2px; padding: 8px 20px; transition: all 0.2s; }
-.stButton > button:hover { background: linear-gradient(135deg, #00ffff 0%, #00d4ff 100%); color: #0a0e1a; box-shadow: 0 0 16px rgba(0,212,255,0.45); transform: translateY(-1px); }
+.stTextInput input:focus, .stPasswordInput input:focus {
+    border-color: #00d4ff !important;
+    box-shadow: 0 0 0 1px #00d4ff !important;
+}
+.stTextInput label, .stPasswordInput label {
+    color: #6c7a89 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.7rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1.5px !important;
+}
+.stButton > button {
+    background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+    color: #0a0e1a; border: none; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 1.5px;
+    font-size: 0.78rem; border-radius: 2px; transition: all 0.2s;
+}
+.stButton > button:hover {
+    background: linear-gradient(135deg, #00ffff 0%, #00d4ff 100%);
+    box-shadow: 0 0 16px rgba(0,212,255,0.45);
+    transform: translateY(-1px);
+}
 .stForm { border: none; padding: 0; background: transparent; }
 
-[data-testid="stExpander"] { background: #131722 !important; border: 1px solid #2a3142 !important; border-radius: 4px !important; }
-[data-testid="stExpander"] summary { color: #e0e6ed !important; font-family: 'JetBrains Mono', monospace !important; font-size: 0.78rem !important; text-transform: uppercase; letter-spacing: 1.5px; }
-.stDataFrame { background: #131722; border: 1px solid #2a3142; border-radius: 4px; }
-.js-plotly-plot, .plot-container { background: transparent !important; }
-.stAlert { background: #131722 !important; border: 1px solid #2a3142 !important; border-left: 3px solid #ff3860 !important; color: #e0e6ed !important; border-radius: 2px !important; }
-
-.scada-footer { background: linear-gradient(90deg, #0a0e1a, #131722); border: 1px solid #2a3142; border-radius: 4px; padding: 8px 16px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: #6c7a89; text-transform: uppercase; letter-spacing: 1.2px; margin-top: 16px; }
-.scada-footer .footer-item { display: flex; gap: 6px; }
-.scada-footer .footer-value { color: #e0e6ed; }
-
-@media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 600px) {
-    .kpi-grid { grid-template-columns: 1fr; }
-    .scada-title { font-size: 1rem; letter-spacing: 1.5px; }
-    .scada-status-block { gap: 10px; }
-    .kpi-value { font-size: 1.5rem; }
-    .block-container { padding: 0.5rem 0.75rem 1rem 0.75rem; }
+[data-testid="stExpander"] {
+    background: #131722 !important;
+    border: 1px solid #2a3142 !important;
+    border-radius: 4px !important;
 }
+[data-testid="stExpander"] summary {
+    color: #e0e6ed !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 0.78rem !important;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.stDataFrame { background: #131722; border: 1px solid #2a3142; border-radius: 4px; }
+.stAlert {
+    background: #131722 !important;
+    border: 1px solid #2a3142 !important;
+    border-left: 3px solid #ff3860 !important;
+    color: #e0e6ed !important;
+    border-radius: 2px !important;
+}
+.js-plotly-plot, .plot-container { background: transparent !important; }
+
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+.led-pulse { animation: pulse 1.6s ease-in-out infinite; }
 </style>
 """
 st.markdown(SCADA_CSS, unsafe_allow_html=True)
 
 # =========================================================
-# SESSION + LOGIN
+# SESSION
 # =========================================================
 if "logged_in" not in st.session_state:
     st.session_state.logged_in = False
@@ -127,21 +115,32 @@ if "logged_in" not in st.session_state:
 
 def classificar_temperatura(valor):
     if valor is None or pd.isna(valor):
-        return "offline", "Offline"
+        return "offline", "Offline", "#6c7a89"
     if valor < LIM_FRIO:
-        return "cold", "Frio"
+        return "cold", "Frio", "#00b4d8"
     if valor <= LIM_NORMAL_MAX:
-        return "normal", "Normal"
+        return "normal", "Normal", "#06ffa5"
     if valor <= LIM_ALERTA_MAX:
-        return "warn", "Alerta"
-    return "hot", "Crítico"
+        return "warn", "Alerta", "#ffaa00"
+    return "hot", "Crítico", "#ff3860"
 
 
+# =========================================================
+# LOGIN
+# =========================================================
 def login():
     st.markdown(
-        '<div class="login-wrapper">'
-        '<div class="login-title">◉ SCADA</div>'
-        '<div class="login-sub">Sistema de Supervisão · v1.0</div>',
+        """
+        <div style="max-width:380px;margin:80px auto;background:linear-gradient(135deg,#131722,#1a1f2e);
+        border:1px solid #2a3142;border-top:3px solid #00d4ff;padding:32px 28px;border-radius:4px;
+        box-shadow:0 8px 32px rgba(0,212,255,0.08);">
+            <div style="font-size:1.3rem;font-weight:700;color:#fff;letter-spacing:3px;
+            text-transform:uppercase;text-align:center;margin-bottom:4px;">◉ SCADA</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:#00d4ff;
+            letter-spacing:1.5px;text-align:center;margin-bottom:24px;">
+            Sistema de Supervisão · v1.0</div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
     with st.form("login_form"):
@@ -154,7 +153,6 @@ def login():
                 st.rerun()
             else:
                 st.error("Credenciais inválidas.")
-    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def logout():
@@ -183,24 +181,43 @@ def tratar_coluna_temperatura(df, col):
 
 
 # =========================================================
-# COMPONENTES VISUAIS
+# HEADER  — inline styles, sem classes externas
 # =========================================================
 def render_header(status_sistema, ultima_leitura, idade_min):
-    led_class = {"online": "", "warn": "warn", "error": "error"}[status_sistema]
-    label_status = {"online": "ONLINE", "warn": "STALE", "error": "OFFLINE"}[status_sistema]
-    ts = ultima_leitura.strftime("%d/%m/%Y %H:%M:%S") if ultima_leitura is not None else "--"
-    idade = f"{idade_min:.1f} min" if idade_min is not None else "--"
+    cor_led   = {"online": "#06ffa5", "warn": "#ffaa00", "error": "#ff3860"}[status_sistema]
+    label_st  = {"online": "ONLINE",  "warn": "STALE",   "error": "OFFLINE"}[status_sistema]
+    ts        = ultima_leitura.strftime("%d/%m/%Y %H:%M:%S") if ultima_leitura else "--"
+    idade     = f"{idade_min:.1f} min" if idade_min is not None else "--"
+
     st.markdown(
         f"""
-        <div class="scada-header">
-            <div class="scada-title-block">
-                <p class="scada-title">◉ Monitor de Temperatura</p>
-                <p class="scada-subtitle">SCADA · CONTROL ROOM · CH-01..04</p>
+        <div style="background:linear-gradient(90deg,#131722,#1a1f2e);border:1px solid #2a3142;
+        border-left:4px solid #00d4ff;border-radius:4px;padding:14px 22px;margin-bottom:16px;
+        display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+
+            <div>
+                <div style="font-size:1.2rem;font-weight:700;color:#fff;letter-spacing:2.5px;
+                text-transform:uppercase;">◉ Monitor de Temperatura</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.7rem;
+                color:#00d4ff;letter-spacing:1.5px;">SCADA · CONTROL ROOM · CH-01..04</div>
             </div>
-            <div class="scada-status-block">
-                <div class="status-item"><div class="status-led {led_class}"></div><span>Status:</span><span class="status-value">{label_status}</span></div>
-                <div class="status-item"><span>Última leitura:</span><span class="status-value">{ts}</span></div>
-                <div class="status-item"><span>Idade:</span><span class="status-value">{idade}</span></div>
+
+            <div style="display:flex;gap:20px;align-items:center;flex-wrap:wrap;
+            font-family:'JetBrains Mono',monospace;font-size:0.72rem;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <div class="led-pulse" style="width:10px;height:10px;border-radius:50%;
+                    background:{cor_led};box-shadow:0 0 8px {cor_led};"></div>
+                    <span style="color:#6c7a89;text-transform:uppercase;">Status:</span>
+                    <span style="color:#e0e6ed;">{label_st}</span>
+                </div>
+                <div>
+                    <span style="color:#6c7a89;text-transform:uppercase;">Última leitura:&nbsp;</span>
+                    <span style="color:#e0e6ed;">{ts}</span>
+                </div>
+                <div>
+                    <span style="color:#6c7a89;text-transform:uppercase;">Idade:&nbsp;</span>
+                    <span style="color:#e0e6ed;">{idade}</span>
+                </div>
             </div>
         </div>
         """,
@@ -208,46 +225,97 @@ def render_header(status_sistema, ultima_leitura, idade_min):
     )
 
 
+# =========================================================
+# KPIs — st.columns + um markdown simples por célula
+# =========================================================
 def render_kpis(valores_atuais):
-    cards = []
-    for sensor in TEMPERATURAS:
-        v = valores_atuais.get(sensor)
-        cls, tag = classificar_temperatura(v)
-        valor_txt = f"{v:.2f}" if v is not None and not pd.isna(v) else "--"
-        cards.append(
-            f"""
-            <div class="kpi-tile {cls}">
-                <div class="kpi-label">{sensor.upper()}</div>
-                <div class="kpi-value">{valor_txt}<span class="kpi-unit">°C</span></div>
-                <span class="kpi-tag {cls}">● {tag}</span>
-            </div>
-            """
-        )
-    st.markdown(f'<div class="kpi-grid">{"".join(cards)}</div>', unsafe_allow_html=True)
+    cols = st.columns(4)
+    for i, sensor in enumerate(TEMPERATURAS):
+        v                = valores_atuais.get(sensor)
+        _, tag, cor      = classificar_temperatura(v)
+        valor_txt        = f"{v:.2f}" if v is not None and not pd.isna(v) else "--"
+        with cols[i]:
+            st.markdown(
+                f"<div style='background:linear-gradient(135deg,#131722,#1a1f2e);"
+                f"border:1px solid #2a3142;border-left:3px solid {cor};"
+                f"border-radius:4px;padding:14px 16px;'>"
+                f"<div style='font-family:JetBrains Mono,monospace;font-size:0.68rem;"
+                f"color:#6c7a89;text-transform:uppercase;letter-spacing:1.5px;"
+                f"margin-bottom:6px;'>{sensor}</div>"
+                f"<div style='font-family:JetBrains Mono,monospace;font-size:1.85rem;"
+                f"font-weight:700;color:#fff;line-height:1.1;'>{valor_txt}"
+                f"<span style='font-size:0.95rem;color:#6c7a89;margin-left:4px;'>°C</span></div>"
+                f"<span style='display:inline-block;padding:2px 8px;border-radius:2px;"
+                f"font-family:JetBrains Mono,monospace;font-size:0.62rem;text-transform:uppercase;"
+                f"letter-spacing:1.2px;margin-top:8px;border:1px solid {cor};"
+                f"background:rgba(0,0,0,0.2);color:{cor};'>● {tag}</span>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
 
 
+# =========================================================
+# DIVISOR DE SEÇÃO — inline style
+# =========================================================
+def render_section(titulo):
+    st.markdown(
+        f"<div style='font-family:JetBrains Mono,monospace;font-size:0.72rem;color:#00d4ff;"
+        f"text-transform:uppercase;letter-spacing:2.5px;margin:20px 0 10px 0;"
+        f"padding-bottom:6px;border-bottom:1px solid #2a3142;'>▸ {titulo}</div>",
+        unsafe_allow_html=True,
+    )
+
+
+# =========================================================
+# LABEL DO SENSOR — inline style
+# =========================================================
+def render_sensor_label(sensor, v_min, v_max, v_avg, n_pts):
+    cor = CORES_SENSORES[sensor]
+    st.markdown(
+        f"<div style='font-family:JetBrains Mono,monospace;font-size:0.72rem;"
+        f"color:{cor};letter-spacing:1.5px;text-transform:uppercase;"
+        f"margin:10px 0 4px 0;'>"
+        f"▸ {sensor}&nbsp;&nbsp;&nbsp;"
+        f"<span style='color:#6c7a89;'>MIN</span>&nbsp;"
+        f"<span style='color:#e0e6ed;font-weight:600;'>{v_min:.2f} °C</span>&nbsp;&nbsp;"
+        f"<span style='color:#6c7a89;'>AVG</span>&nbsp;"
+        f"<span style='color:#e0e6ed;font-weight:600;'>{v_avg:.2f} °C</span>&nbsp;&nbsp;"
+        f"<span style='color:#6c7a89;'>MAX</span>&nbsp;"
+        f"<span style='color:#e0e6ed;font-weight:600;'>{v_max:.2f} °C</span>&nbsp;&nbsp;"
+        f"<span style='color:#6c7a89;'>N</span>&nbsp;"
+        f"<span style='color:#e0e6ed;font-weight:600;'>{n_pts}</span>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
+
+
+# =========================================================
+# PLOTLY — GAUGE
+# =========================================================
 def criar_gauge_scada(valor_atual, valor_min, valor_max):
     gauge_min = min(0, int(valor_min) - 5)
     gauge_max = max(50, int(valor_max) + 5)
-    cls, _ = classificar_temperatura(valor_atual)
-    cor_map = {"cold": "#00b4d8", "normal": "#06ffa5", "warn": "#ffaa00", "hot": "#ff3860", "offline": "#6c7a89"}
-    cor_bar = cor_map[cls]
+    _, _, cor_bar = classificar_temperatura(valor_atual)
 
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
         value=valor_atual,
-        number={"suffix": " °C", "valueformat": ".2f",
-                "font": {"family": "JetBrains Mono, monospace", "size": 26, "color": "#ffffff"}},
+        number={
+            "suffix": " °C", "valueformat": ".2f",
+            "font": {"family": "JetBrains Mono, monospace", "size": 26, "color": "#ffffff"},
+        },
         gauge={
-            "axis": {"range": [gauge_min, gauge_max], "tickwidth": 1, "tickcolor": "#3a4256",
-                     "tickfont": {"family": "JetBrains Mono, monospace", "size": 9, "color": "#6c7a89"}},
+            "axis": {
+                "range": [gauge_min, gauge_max], "tickwidth": 1, "tickcolor": "#3a4256",
+                "tickfont": {"family": "JetBrains Mono, monospace", "size": 9, "color": "#6c7a89"},
+            },
             "bar": {"color": cor_bar, "thickness": 0.28},
             "bgcolor": "#0a0e1a", "borderwidth": 1, "bordercolor": "#2a3142",
             "steps": [
-                {"range": [gauge_min, LIM_FRIO], "color": "rgba(0, 180, 216, 0.18)"},
-                {"range": [LIM_FRIO, LIM_NORMAL_MAX], "color": "rgba(6, 255, 165, 0.18)"},
-                {"range": [LIM_NORMAL_MAX, LIM_ALERTA_MAX], "color": "rgba(255, 170, 0, 0.18)"},
-                {"range": [LIM_ALERTA_MAX, gauge_max], "color": "rgba(255, 56, 96, 0.18)"},
+                {"range": [gauge_min, LIM_FRIO],        "color": "rgba(0,180,216,0.18)"},
+                {"range": [LIM_FRIO, LIM_NORMAL_MAX],   "color": "rgba(6,255,165,0.18)"},
+                {"range": [LIM_NORMAL_MAX, LIM_ALERTA_MAX], "color": "rgba(255,170,0,0.18)"},
+                {"range": [LIM_ALERTA_MAX, gauge_max],  "color": "rgba(255,56,96,0.18)"},
             ],
             "threshold": {"line": {"color": cor_bar, "width": 3}, "thickness": 0.85, "value": valor_atual},
         },
@@ -260,25 +328,29 @@ def criar_gauge_scada(valor_atual, valor_min, valor_max):
     return fig
 
 
+# =========================================================
+# PLOTLY — TREND INDIVIDUAL
+# =========================================================
 def criar_grafico_sensor_scada(df_sensor, nome_sensor):
     cor = CORES_SENSORES[nome_sensor]
     r, g, b = int(cor[1:3], 16), int(cor[3:5], 16), int(cor[5:7], 16)
-    fill_rgba = f"rgba({r},{g},{b},0.07)"
+
     fig = go.Figure()
     fig.add_trace(go.Scatter(
-        x=df_sensor["DataHora"], y=df_sensor[nome_sensor], mode="lines", name=nome_sensor,
-        line=dict(color=cor, width=2), fill="tozeroy", fillcolor=fill_rgba,
+        x=df_sensor["DataHora"], y=df_sensor[nome_sensor],
+        mode="lines", line=dict(color=cor, width=2),
+        fill="tozeroy", fillcolor=f"rgba({r},{g},{b},0.07)",
         hovertemplate="%{x|%d/%m %H:%M:%S}<br>%{y:.2f} °C<extra></extra>",
     ))
-    for lim, cor_lim in [(LIM_FRIO, "#00b4d8"), (LIM_NORMAL_MAX, "#06ffa5"), (LIM_ALERTA_MAX, "#ffaa00")]:
-        fig.add_hline(y=lim, line_dash="dot", line_color=cor_lim, opacity=0.4, line_width=1)
+    for lim, cl in [(LIM_FRIO, "#00b4d8"), (LIM_NORMAL_MAX, "#06ffa5"), (LIM_ALERTA_MAX, "#ffaa00")]:
+        fig.add_hline(y=lim, line_dash="dot", line_color=cl, opacity=0.4, line_width=1)
+
     fig.update_layout(
         height=220, margin=dict(l=44, r=16, t=10, b=36),
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="#0a0e1a",
         font=dict(family="JetBrains Mono, monospace", size=9, color="#6c7a89"),
-        xaxis=dict(gridcolor="#1a1f2e", zerolinecolor="#1a1f2e", showgrid=True, tickfont=dict(color="#6c7a89")),
-        yaxis=dict(gridcolor="#1a1f2e", zerolinecolor="#1a1f2e", showgrid=True,
-                   tickfont=dict(color="#6c7a89"), ticksuffix=" °C"),
+        xaxis=dict(gridcolor="#1a1f2e", showgrid=True, tickfont=dict(color="#6c7a89")),
+        yaxis=dict(gridcolor="#1a1f2e", showgrid=True, tickfont=dict(color="#6c7a89"), ticksuffix=" °C"),
         showlegend=False, hovermode="x unified",
         hoverlabel=dict(bgcolor="#131722", bordercolor=cor,
                         font=dict(family="JetBrains Mono, monospace", color="#fff")),
@@ -286,15 +358,19 @@ def criar_grafico_sensor_scada(df_sensor, nome_sensor):
     return fig
 
 
+# =========================================================
+# PLOTLY — TREND CONSOLIDADO
+# =========================================================
 def criar_grafico_geral_scada(df_valid):
     fig = go.Figure()
     for sensor in TEMPERATURAS:
         fig.add_trace(go.Scatter(
-            x=df_valid["DataHora"], y=df_valid[sensor], mode="lines", name=sensor,
+            x=df_valid["DataHora"], y=df_valid[sensor],
+            mode="lines", name=sensor,
             line=dict(color=CORES_SENSORES[sensor], width=2),
             hovertemplate=f"<b>{sensor}</b><br>%{{x|%d/%m %H:%M}}<br>%{{y:.2f}} °C<extra></extra>",
         ))
-    fig.add_hrect(y0=LIM_FRIO, y1=LIM_NORMAL_MAX, fillcolor="#06ffa5", opacity=0.05, line_width=0)
+    fig.add_hrect(y0=LIM_FRIO, y1=LIM_NORMAL_MAX,   fillcolor="#06ffa5", opacity=0.05, line_width=0)
     fig.add_hrect(y0=LIM_NORMAL_MAX, y1=LIM_ALERTA_MAX, fillcolor="#ffaa00", opacity=0.05, line_width=0)
     fig.update_layout(
         height=380, margin=dict(l=44, r=20, t=20, b=50),
@@ -302,9 +378,11 @@ def criar_grafico_geral_scada(df_valid):
         font=dict(family="JetBrains Mono, monospace", size=10, color="#6c7a89"),
         xaxis=dict(gridcolor="#1a1f2e", showgrid=True, tickfont=dict(color="#6c7a89")),
         yaxis=dict(gridcolor="#1a1f2e", showgrid=True, tickfont=dict(color="#6c7a89"), ticksuffix=" °C"),
-        legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5,
-                    font=dict(family="JetBrains Mono, monospace", color="#e0e6ed", size=10),
-                    bgcolor="rgba(0,0,0,0)"),
+        legend=dict(
+            orientation="h", yanchor="top", y=-0.18, xanchor="center", x=0.5,
+            font=dict(family="JetBrains Mono, monospace", color="#e0e6ed", size=10),
+            bgcolor="rgba(0,0,0,0)",
+        ),
         hovermode="x unified",
         hoverlabel=dict(bgcolor="#131722", bordercolor="#00d4ff",
                         font=dict(family="JetBrains Mono, monospace", color="#fff")),
@@ -312,18 +390,29 @@ def criar_grafico_geral_scada(df_valid):
     return fig
 
 
+# =========================================================
+# FOOTER — inline style
+# =========================================================
 def render_footer(n_amostras, modo_atual):
     agora = pd.Timestamp.now().strftime("%d/%m/%Y %H:%M:%S")
+    itens = [
+        ("SYS", "SCADA-TEMP-01"),
+        ("MODE", modo_atual),
+        ("AMOSTRAS (24H)", str(n_amostras)),
+        ("REFRESH", "30s"),
+        ("SERVER", agora),
+    ]
+    itens_html = "".join(
+        f"<div style='display:flex;gap:6px;'>"
+        f"<span style='color:#6c7a89;text-transform:uppercase;'>{k}:</span>"
+        f"<span style='color:#e0e6ed;'>{v}</span></div>"
+        for k, v in itens
+    )
     st.markdown(
-        f"""
-        <div class="scada-footer">
-            <div class="footer-item"><span>SYS:</span><span class="footer-value">SCADA-TEMP-01</span></div>
-            <div class="footer-item"><span>MODE:</span><span class="footer-value">{modo_atual}</span></div>
-            <div class="footer-item"><span>AMOSTRAS (24H):</span><span class="footer-value">{n_amostras}</span></div>
-            <div class="footer-item"><span>REFRESH:</span><span class="footer-value">30s</span></div>
-            <div class="footer-item"><span>SERVER:</span><span class="footer-value">{agora}</span></div>
-        </div>
-        """,
+        f"<div style='background:linear-gradient(90deg,#0a0e1a,#131722);border:1px solid #2a3142;"
+        f"border-radius:4px;padding:8px 16px;display:flex;justify-content:space-between;"
+        f"flex-wrap:wrap;gap:8px;font-family:JetBrains Mono,monospace;font-size:0.68rem;"
+        f"margin-top:16px;'>{itens_html}</div>",
         unsafe_allow_html=True,
     )
 
@@ -381,44 +470,36 @@ def painel_temperatura():
     df_valid = df.dropna(subset=["DataHora"]).sort_values("DataHora").copy()
     df_valid = df_valid.dropna(subset=TEMPERATURAS, how="all")
 
-    agora = pd.Timestamp.now()
-    df_valid = df_valid[df_valid["DataHora"] >= agora - pd.Timedelta(hours=24)]
+    agora     = pd.Timestamp.now()
+    df_valid  = df_valid[df_valid["DataHora"] >= agora - pd.Timedelta(hours=24)]
 
     if df_valid.empty:
         render_header("error", None, None)
         st.error("Sem amostras válidas nas últimas 24h.")
         return
 
-    ultima = df_valid.iloc[-1]["DataHora"]
+    ultima    = df_valid.iloc[-1]["DataHora"]
     idade_min = (agora - ultima).total_seconds() / 60.0
-    if idade_min <= STALE_MIN:
-        status = "online"
-    elif idade_min <= STALE_MIN * 3:
-        status = "warn"
-    else:
-        status = "error"
+    status    = "online" if idade_min <= STALE_MIN else ("warn" if idade_min <= STALE_MIN * 3 else "error")
 
+    # ── Header ───────────────────────────────────────────
     render_header(status, ultima, idade_min)
-    
+
+    # ── KPIs ─────────────────────────────────────────────
     valores_atuais = {}
     for sensor in TEMPERATURAS:
         serie = df_valid[sensor].dropna()
         valores_atuais[sensor] = float(serie.iloc[-1]) if not serie.empty else None
     render_kpis(valores_atuais)
 
-    # ===== PAINÉIS POR SENSOR =====
-    st.markdown('<div class="scada-section">Painel por Sensor</div>', unsafe_allow_html=True)
+    # ── Painéis por sensor ────────────────────────────────
+    render_section("Painel por Sensor")
 
     for sensor in TEMPERATURAS:
         df_sensor = df_valid[["DataHora", sensor]].dropna().copy()
 
         if df_sensor.empty:
-            st.markdown(
-                f"<span style='font-family:JetBrains Mono,monospace;font-size:0.7rem;"
-                f"color:#6c7a89;letter-spacing:1.5px;text-transform:uppercase;'>"
-                f"▸ {sensor} &nbsp; SEM DADOS</span>",
-                unsafe_allow_html=True,
-            )
+            st.caption(f"▸ {sensor} — sem dados")
             continue
 
         v_min = float(df_sensor[sensor].min())
@@ -427,27 +508,7 @@ def painel_temperatura():
         v_now = float(df_sensor.iloc[-1][sensor])
         n_pts = len(df_sensor)
 
-        # ── Título + stats inline (sem div aninhado) ──────────────────
-        cor_sensor = CORES_SENSORES[sensor]
-        st.markdown(
-            f"<span style='font-family:JetBrains Mono,monospace;font-size:0.7rem;"
-            f"color:{cor_sensor};letter-spacing:1.5px;text-transform:uppercase;'>"
-            f"▸ {sensor}"
-            f"&nbsp;&nbsp;&nbsp;"
-            f"<span style='color:#6c7a89;'>MIN</span>&nbsp;"
-            f"<span style='color:#e0e6ed;font-weight:600;'>{v_min:.2f} °C</span>"
-            f"&nbsp;&nbsp;"
-            f"<span style='color:#6c7a89;'>AVG</span>&nbsp;"
-            f"<span style='color:#e0e6ed;font-weight:600;'>{v_avg:.2f} °C</span>"
-            f"&nbsp;&nbsp;"
-            f"<span style='color:#6c7a89;'>MAX</span>&nbsp;"
-            f"<span style='color:#e0e6ed;font-weight:600;'>{v_max:.2f} °C</span>"
-            f"&nbsp;&nbsp;"
-            f"<span style='color:#6c7a89;'>N</span>&nbsp;"
-            f"<span style='color:#e0e6ed;font-weight:600;'>{n_pts}</span>"
-            f"</span>",
-            unsafe_allow_html=True,
-        )
+        render_sensor_label(sensor, v_min, v_max, v_avg, n_pts)
 
         col_gauge, col_grafico = st.columns([1, 2.2])
         with col_gauge:
@@ -463,15 +524,15 @@ def painel_temperatura():
                 config={"displayModeBar": False},
             )
 
-    # ===== TREND CONSOLIDADO =====
-    st.markdown('<div class="scada-section">Trend Consolidado · 4 Canais</div>', unsafe_allow_html=True)
+    # ── Trend consolidado ────────────────────────────────
+    render_section("Trend Consolidado · 4 Canais")
     st.plotly_chart(
         criar_grafico_geral_scada(df_valid),
         use_container_width=True,
         config={"displayModeBar": False},
     )
 
-    # ===== TABELA =====
+    # ── Tabela ───────────────────────────────────────────
     with st.expander("◉ Histórico bruto (últimas 24h)"):
         st.dataframe(
             df_valid[["DataHora"] + TEMPERATURAS].sort_values("DataHora", ascending=False),
