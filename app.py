@@ -25,11 +25,10 @@ CORES_SENSORES = {
     "Temperatura4": "#ff3860",
 }
 
-# Limites operacionais — ajuste conforme processo
 LIM_FRIO = 18.0
 LIM_NORMAL_MAX = 26.0
 LIM_ALERTA_MAX = 32.0
-STALE_MIN = 5  # min sem leitura -> dado estagnado
+STALE_MIN = 5
 
 # =========================================================
 # CSS - TEMA SCADA DARK
@@ -86,13 +85,6 @@ SCADA_CSS = """
 .scada-section { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #00d4ff; text-transform: uppercase; letter-spacing: 2.5px; margin: 20px 0 10px 0; padding-bottom: 6px; border-bottom: 1px solid #2a3142; display: flex; align-items: center; gap: 8px; }
 .scada-section::before { content: '▸'; color: #00d4ff; }
 
-.sensor-panel { background: #131722; border: 1px solid #2a3142; border-radius: 4px; padding: 12px 16px; margin-bottom: 8px; }
-.sensor-panel-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-.sensor-panel-title { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600; color: #fff; letter-spacing: 1.5px; }
-.sensor-stats { display: flex; gap: 16px; flex-wrap: wrap; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; }
-.sensor-stat-item { color: #6c7a89; }
-.sensor-stat-value { color: #e0e6ed; font-weight: 600; }
-
 .login-wrapper { max-width: 380px; margin: 80px auto; background: linear-gradient(135deg, #131722 0%, #1a1f2e 100%); border: 1px solid #2a3142; border-top: 3px solid #00d4ff; padding: 32px 28px; border-radius: 4px; box-shadow: 0 8px 32px rgba(0, 212, 255, 0.08); }
 .login-title { font-size: 1.3rem; font-weight: 700; color: #fff; letter-spacing: 3px; text-transform: uppercase; margin: 0 0 4px 0; text-align: center; }
 .login-sub { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: #00d4ff; letter-spacing: 1.5px; margin: 0 0 24px 0; text-align: center; }
@@ -121,7 +113,6 @@ SCADA_CSS = """
     .scada-status-block { gap: 10px; }
     .kpi-value { font-size: 1.5rem; }
     .block-container { padding: 0.5rem 0.75rem 1rem 0.75rem; }
-    .sensor-stats { gap: 10px; }
 }
 </style>
 """
@@ -200,14 +191,19 @@ def render_header(status_sistema, ultima_leitura, idade_min):
     ts = ultima_leitura.strftime("%d/%m/%Y %H:%M:%S") if ultima_leitura is not None else "--"
     idade = f"{idade_min:.1f} min" if idade_min is not None else "--"
     st.markdown(
-        f"<span style='font-family:JetBrains Mono,monospace;font-size:0.7rem;"
-        f"color:{cor_sensor};letter-spacing:1.5px;text-transform:uppercase;'>"
-        f"▸ {sensor} &nbsp;&nbsp; "
-        f"<span style='color:#6c7a89;'>MIN</span> <span style='color:#e0e6ed;'>{v_min:.2f}°C</span>"
-        f"&nbsp;&nbsp;<span style='color:#6c7a89;'>AVG</span> <span style='color:#e0e6ed;'>{v_avg:.2f}°C</span>"
-        f"&nbsp;&nbsp;<span style='color:#6c7a89;'>MAX</span> <span style='color:#e0e6ed;'>{v_max:.2f}°C</span>"
-        f"&nbsp;&nbsp;<span style='color:#6c7a89;'>N</span> <span style='color:#e0e6ed;'>{n_pts}</span>"
-        f"</span>",
+        f"""
+        <div class="scada-header">
+            <div class="scada-title-block">
+                <p class="scada-title">◉ Monitor de Temperatura</p>
+                <p class="scada-subtitle">SCADA · CONTROL ROOM · CH-01..04</p>
+            </div>
+            <div class="scada-status-block">
+                <div class="status-item"><div class="status-led {led_class}"></div><span>Status:</span><span class="status-value">{label_status}</span></div>
+                <div class="status-item"><span>Última leitura:</span><span class="status-value">{ts}</span></div>
+                <div class="status-item"><span>Idade:</span><span class="status-value">{idade}</span></div>
+            </div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -256,9 +252,11 @@ def criar_gauge_scada(valor_atual, valor_min, valor_max):
             "threshold": {"line": {"color": cor_bar, "width": 3}, "thickness": 0.85, "value": valor_atual},
         },
     ))
-    fig.update_layout(height=220, margin=dict(l=20, r=20, t=10, b=10),
-                      paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                      font={"color": "#e0e6ed"})
+    fig.update_layout(
+        height=220, margin=dict(l=20, r=20, t=10, b=10),
+        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
+        font={"color": "#e0e6ed"},
+    )
     return fig
 
 
@@ -279,9 +277,11 @@ def criar_grafico_sensor_scada(df_sensor, nome_sensor):
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="#0a0e1a",
         font=dict(family="JetBrains Mono, monospace", size=9, color="#6c7a89"),
         xaxis=dict(gridcolor="#1a1f2e", zerolinecolor="#1a1f2e", showgrid=True, tickfont=dict(color="#6c7a89")),
-        yaxis=dict(gridcolor="#1a1f2e", zerolinecolor="#1a1f2e", showgrid=True, tickfont=dict(color="#6c7a89"), ticksuffix=" °C"),
+        yaxis=dict(gridcolor="#1a1f2e", zerolinecolor="#1a1f2e", showgrid=True,
+                   tickfont=dict(color="#6c7a89"), ticksuffix=" °C"),
         showlegend=False, hovermode="x unified",
-        hoverlabel=dict(bgcolor="#131722", bordercolor=cor, font=dict(family="JetBrains Mono, monospace", color="#fff")),
+        hoverlabel=dict(bgcolor="#131722", bordercolor=cor,
+                        font=dict(family="JetBrains Mono, monospace", color="#fff")),
     )
     return fig
 
@@ -306,7 +306,8 @@ def criar_grafico_geral_scada(df_valid):
                     font=dict(family="JetBrains Mono, monospace", color="#e0e6ed", size=10),
                     bgcolor="rgba(0,0,0,0)"),
         hovermode="x unified",
-        hoverlabel=dict(bgcolor="#131722", bordercolor="#00d4ff", font=dict(family="JetBrains Mono, monospace", color="#fff")),
+        hoverlabel=dict(bgcolor="#131722", bordercolor="#00d4ff",
+                        font=dict(family="JetBrains Mono, monospace", color="#fff")),
     )
     return fig
 
@@ -328,7 +329,7 @@ def render_footer(n_amostras, modo_atual):
 
 
 # =========================================================
-# LOGOUT (canto)
+# LOGOUT
 # =========================================================
 col_top1, col_top2 = st.columns([10, 1])
 with col_top2:
@@ -355,7 +356,9 @@ def painel_temperatura():
     df.columns = df.columns.str.strip()
 
     if "DataHora" in df.columns:
-        df["DataHora"] = pd.to_datetime(df["DataHora"].astype(str).str.strip(), errors="coerce", dayfirst=True)
+        df["DataHora"] = pd.to_datetime(
+            df["DataHora"].astype(str).str.strip(), errors="coerce", dayfirst=True
+        )
     elif "Data" in df.columns and "Hora" in df.columns:
         df["DataHora"] = pd.to_datetime(
             df["Data"].astype(str).str.strip() + " " + df["Hora"].astype(str).str.strip(),
@@ -396,22 +399,25 @@ def painel_temperatura():
         status = "error"
 
     render_header(status, ultima, idade_min)
-
+    
     valores_atuais = {}
     for sensor in TEMPERATURAS:
         serie = df_valid[sensor].dropna()
         valores_atuais[sensor] = float(serie.iloc[-1]) if not serie.empty else None
     render_kpis(valores_atuais)
 
+    # ===== PAINÉIS POR SENSOR =====
     st.markdown('<div class="scada-section">Painel por Sensor</div>', unsafe_allow_html=True)
+
     for sensor in TEMPERATURAS:
         df_sensor = df_valid[["DataHora", sensor]].dropna().copy()
+
         if df_sensor.empty:
             st.markdown(
-                f'<div class="sensor-panel"><div class="sensor-panel-header">'
-                f'<div class="sensor-panel-title">▸ {sensor.upper()}</div>'
-                f'<div class="sensor-stats"><span class="sensor-stat-item">SEM DADOS</span></div>'
-                f'</div></div>', unsafe_allow_html=True,
+                f"<span style='font-family:JetBrains Mono,monospace;font-size:0.7rem;"
+                f"color:#6c7a89;letter-spacing:1.5px;text-transform:uppercase;'>"
+                f"▸ {sensor} &nbsp; SEM DADOS</span>",
+                unsafe_allow_html=True,
             )
             continue
 
@@ -421,38 +427,56 @@ def painel_temperatura():
         v_now = float(df_sensor.iloc[-1][sensor])
         n_pts = len(df_sensor)
 
+        # ── Título + stats inline (sem div aninhado) ──────────────────
+        cor_sensor = CORES_SENSORES[sensor]
         st.markdown(
-            f"""
-            <div class="sensor-panel">
-                <div class="sensor-panel-header">
-                    <div class="sensor-panel-title">▸ {sensor.upper()}</div>
-                    <div class="sensor-stats">
-                        <div class="sensor-stat-item">MIN: <span class="sensor-stat-value">{v_min:.2f} °C</span></div>
-                        <div class="sensor-stat-item">AVG: <span class="sensor-stat-value">{v_avg:.2f} °C</span></div>
-                        <div class="sensor-stat-item">MAX: <span class="sensor-stat-value">{v_max:.2f} °C</span></div>
-                        <div class="sensor-stat-item">N: <span class="sensor-stat-value">{n_pts}</span></div>
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True,
+            f"<span style='font-family:JetBrains Mono,monospace;font-size:0.7rem;"
+            f"color:{cor_sensor};letter-spacing:1.5px;text-transform:uppercase;'>"
+            f"▸ {sensor}"
+            f"&nbsp;&nbsp;&nbsp;"
+            f"<span style='color:#6c7a89;'>MIN</span>&nbsp;"
+            f"<span style='color:#e0e6ed;font-weight:600;'>{v_min:.2f} °C</span>"
+            f"&nbsp;&nbsp;"
+            f"<span style='color:#6c7a89;'>AVG</span>&nbsp;"
+            f"<span style='color:#e0e6ed;font-weight:600;'>{v_avg:.2f} °C</span>"
+            f"&nbsp;&nbsp;"
+            f"<span style='color:#6c7a89;'>MAX</span>&nbsp;"
+            f"<span style='color:#e0e6ed;font-weight:600;'>{v_max:.2f} °C</span>"
+            f"&nbsp;&nbsp;"
+            f"<span style='color:#6c7a89;'>N</span>&nbsp;"
+            f"<span style='color:#e0e6ed;font-weight:600;'>{n_pts}</span>"
+            f"</span>",
+            unsafe_allow_html=True,
         )
 
         col_gauge, col_grafico = st.columns([1, 2.2])
         with col_gauge:
-            st.plotly_chart(criar_gauge_scada(v_now, v_min, v_max),
-                            use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(
+                criar_gauge_scada(v_now, v_min, v_max),
+                use_container_width=True,
+                config={"displayModeBar": False},
+            )
         with col_grafico:
-            st.plotly_chart(criar_grafico_sensor_scada(df_sensor, sensor),
-                            use_container_width=True, config={"displayModeBar": False})
+            st.plotly_chart(
+                criar_grafico_sensor_scada(df_sensor, sensor),
+                use_container_width=True,
+                config={"displayModeBar": False},
+            )
 
+    # ===== TREND CONSOLIDADO =====
     st.markdown('<div class="scada-section">Trend Consolidado · 4 Canais</div>', unsafe_allow_html=True)
-    st.plotly_chart(criar_grafico_geral_scada(df_valid),
-                    use_container_width=True, config={"displayModeBar": False})
+    st.plotly_chart(
+        criar_grafico_geral_scada(df_valid),
+        use_container_width=True,
+        config={"displayModeBar": False},
+    )
 
+    # ===== TABELA =====
     with st.expander("◉ Histórico bruto (últimas 24h)"):
         st.dataframe(
             df_valid[["DataHora"] + TEMPERATURAS].sort_values("DataHora", ascending=False),
-            use_container_width=True, height=300,
+            use_container_width=True,
+            height=300,
         )
 
     render_footer(len(df_valid), "AUTO · 30s")
