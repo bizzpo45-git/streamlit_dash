@@ -169,7 +169,7 @@ def classificar_temperatura(valor):
 def login():
     _, col, _ = st.columns([1, 1.2, 1])
     with col:
-        st.markdown("### ◉ SCADA")
+        st.markdown("### ◉ VOLTNADI")
         st.caption("Sistema de Supervisão · v1.0")
         st.divider()
         with st.form("login_form"):
