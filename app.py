@@ -200,19 +200,14 @@ def render_header(status_sistema, ultima_leitura, idade_min):
     ts = ultima_leitura.strftime("%d/%m/%Y %H:%M:%S") if ultima_leitura is not None else "--"
     idade = f"{idade_min:.1f} min" if idade_min is not None else "--"
     st.markdown(
-        f"""
-        <div class="scada-header">
-            <div class="scada-title-block">
-                <p class="scada-title">◉ Monitor de Temperatura</p>
-                <p class="scada-subtitle">SCADA · CONTROL ROOM · CH-01..04</p>
-            </div>
-            <div class="scada-status-block">
-                <div class="status-item"><div class="status-led {led_class}"></div><span>Status:</span><span class="status-value">{label_status}</span></div>
-                <div class="status-item"><span>Última leitura:</span><span class="status-value">{ts}</span></div>
-                <div class="status-item"><span>Idade:</span><span class="status-value">{idade}</span></div>
-            </div>
-        </div>
-        """,
+        f"<span style='font-family:JetBrains Mono,monospace;font-size:0.7rem;"
+            f"color:{cor_sensor};letter-spacing:1.5px;text-transform:uppercase;'>"
+            f"▸ {sensor} &nbsp;&nbsp; "
+            f"<span style='color:#6c7a89;'>MIN</span> <span style='color:#e0e6ed;'>{v_min:.2f}°C</span>"
+            f"&nbsp;&nbsp;<span style='color:#6c7a89;'>AVG</span> <span style='color:#e0e6ed;'>{v_avg:.2f}°C</span>"
+            f"&nbsp;&nbsp;<span style='color:#6c7a89;'>MAX</span> <span style='color:#e0e6ed;'>{v_max:.2f}°C</span>"
+            f"&nbsp;&nbsp;<span style='color:#6c7a89;'>N</span> <span style='color:#e0e6ed;'>{n_pts}</span>"
+            f"</span>",
         unsafe_allow_html=True,
     )
 
