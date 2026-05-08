@@ -201,13 +201,13 @@ def render_header(status_sistema, ultima_leitura, idade_min):
     idade = f"{idade_min:.1f} min" if idade_min is not None else "--"
     st.markdown(
         f"<span style='font-family:JetBrains Mono,monospace;font-size:0.7rem;"
-            f"color:{cor_sensor};letter-spacing:1.5px;text-transform:uppercase;'>"
-            f"▸ {sensor} &nbsp;&nbsp; "
-            f"<span style='color:#6c7a89;'>MIN</span> <span style='color:#e0e6ed;'>{v_min:.2f}°C</span>"
-            f"&nbsp;&nbsp;<span style='color:#6c7a89;'>AVG</span> <span style='color:#e0e6ed;'>{v_avg:.2f}°C</span>"
-            f"&nbsp;&nbsp;<span style='color:#6c7a89;'>MAX</span> <span style='color:#e0e6ed;'>{v_max:.2f}°C</span>"
-            f"&nbsp;&nbsp;<span style='color:#6c7a89;'>N</span> <span style='color:#e0e6ed;'>{n_pts}</span>"
-            f"</span>",
+        f"color:{cor_sensor};letter-spacing:1.5px;text-transform:uppercase;'>"
+        f"▸ {sensor} &nbsp;&nbsp; "
+        f"<span style='color:#6c7a89;'>MIN</span> <span style='color:#e0e6ed;'>{v_min:.2f}°C</span>"
+        f"&nbsp;&nbsp;<span style='color:#6c7a89;'>AVG</span> <span style='color:#e0e6ed;'>{v_avg:.2f}°C</span>"
+        f"&nbsp;&nbsp;<span style='color:#6c7a89;'>MAX</span> <span style='color:#e0e6ed;'>{v_max:.2f}°C</span>"
+        f"&nbsp;&nbsp;<span style='color:#6c7a89;'>N</span> <span style='color:#e0e6ed;'>{n_pts}</span>"
+        f"</span>",
         unsafe_allow_html=True,
     )
 
