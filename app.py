@@ -41,6 +41,9 @@ st.markdown("""
 }
 [data-testid="stHeader"] { background: transparent; height: 0; }
 #MainMenu, footer { visibility: hidden; }
+[data-testid="stToolbar"] { visibility: hidden !important; }
+[data-testid="stDecoration"] { visibility: hidden !important; }
+[data-testid="stStatusWidget"] { visibility: hidden !important; }
 .block-container { padding: 1rem 1.5rem 2rem 1.5rem; max-width: 100%; }
 
 h1, h2, h3 {
